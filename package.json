@@ -5,8 +5,21 @@
   "type": "module",
   "description": "Spatial AI for crowdsourced first response - coordinates multiple bystanders through the 4-8 minutes before EMS arrives.",
   "scripts": {
-    "start": "node server/index.mjs",
-    "dev": "node --watch server/index.mjs"
+    "start": "npm run build && node server/index.mjs",
+    "serve": "node server/index.mjs",
+    "build": "vite build",
+    "api": "node server/index.mjs",
+    "dev": "vite"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "vite": "^5.4.21"
+  }
 }

@@ -16,7 +16,7 @@ import { PROTOCOL_LIST } from './protocols.mjs';
 import * as store from './incidents.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const PUBLIC = path.join(ROOT, 'public');
+const DIST = path.join(ROOT, 'dist'); // Vite build output.
 const PORT = Number(process.env.PORT) || 4173;
 
 const MIME = {
@@ -56,32 +56,46 @@ async function readBody(req) {
   }
 }
 
-async function serveStatic(req, res, pathname) {
-  const rel = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
-  const target = path.join(PUBLIC, rel);
+async function sendIndex(res) {
+  try {
+    const data = await fs.readFile(path.join(DIST, 'index.html'));
+    res.writeHead(200, { 'content-type': MIME['.html'], 'cache-control': 'no-cache' });
+    res.end(data);
+  } catch {
+    res.writeHead(503, { 'content-type': 'text/plain' })
+      .end('The app has not been built yet. Run: npm run build');
+  }
+}
 
-  // Never let a crafted path escape /public.
-  if (!target.startsWith(PUBLIC)) {
+async function serveStatic(req, res, pathname) {
+  if (pathname === '/') return sendIndex(res);
+
+  const target = path.join(DIST, pathname.replace(/^\/+/, ''));
+
+  // Never let a crafted path escape dist/.
+  if (!target.startsWith(DIST)) {
     res.writeHead(403).end('Forbidden');
-    return;
+    return undefined;
   }
 
   try {
     const data = await fs.readFile(target);
     res.writeHead(200, {
       'content-type': MIME[path.extname(target)] || 'application/octet-stream',
-      'cache-control': 'no-cache'
+      // Vite fingerprints its assets, so they are safe to cache hard; nothing else is.
+      'cache-control': target.includes(`${path.sep}assets${path.sep}`)
+        ? 'public, max-age=31536000, immutable'
+        : 'no-cache'
     });
     res.end(data);
+    return undefined;
   } catch {
-    // Clean URLs: /join -> join.html
-    try {
-      const data = await fs.readFile(path.join(PUBLIC, `${rel}.html`));
-      res.writeHead(200, { 'content-type': MIME['.html'], 'cache-control': 'no-cache' });
-      res.end(data);
-    } catch {
+    // Client-side routes (/incident, /demo) are not files. Hand back the app shell.
+    if (path.extname(pathname)) {
       res.writeHead(404, { 'content-type': 'text/plain' }).end('Not found');
+      return undefined;
     }
+    return sendIndex(res);
   }
 }
 

@@ -15,11 +15,22 @@ different job**, synchronised live across all of their phones.
 ## Run it
 
 ```bash
-node server/index.mjs
+npm install
+npm start
 ```
 
-Then open <http://localhost:4173>. That is the whole setup — no `npm install`, no build step, no
-database. Node 18 or newer.
+Then open <http://localhost:4173>. `npm start` builds the React app and serves it from the same
+Node process that holds the incident state — **one process, one port**, nothing to orchestrate
+while you are recording a demo. Node 18 or newer.
+
+For iteration with hot reload, run the API and Vite side by side:
+
+```bash
+npm run api
+npm run dev
+```
+
+Vite serves on 5173 and proxies `/api` (including the SSE stream) through to 4173.
 
 | URL | What it is |
 | --- | --- |
@@ -30,7 +41,7 @@ database. Node 18 or newer.
 ### Optional: Claude triage
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-... node server/index.mjs
+ANTHROPIC_API_KEY=sk-ant-... npm start
 ```
 
 With a key set, panicked speech is classified by `claude-opus-5`, which handles broken,
@@ -98,21 +109,33 @@ This is the part that mattered most, and it is enforced in code rather than prom
 
 ## Architecture
 
+**React 18 + Vite** on the front, a **zero-dependency Node server** behind it.
+
 ```
-server/
-  index.mjs       HTTP + SSE, zero dependencies
-  incidents.mjs   In-memory registry: roles, assignment, rotation, broadcast
-  classify.mjs    Claude with an offline deterministic fallback
-  protocols.mjs   The five protocols. All medical content lives here and only here
-public/
-  index.html      Landing, listening, AI confirmation, join
-  incident.html   The responder console
-  demo.html       Two-phone stage
-  js/             ES modules, no framework, no build
+server/                 No dependencies at all
+  index.mjs             HTTP + SSE + static, with SPA fallback
+  incidents.mjs         In-memory registry: roles, assignment, rotation, broadcast
+  classify.mjs          Claude with an offline deterministic fallback
+  protocols.mjs         The five protocols. All medical content lives here and only here
+
+src/
+  main.jsx              Three routes, no router dependency
+  index.css             Design system
+  lib/
+    api.js              Fetch wrapper
+    useIncident.js      SSE subscription, role derivation, reconnect-and-rejoin
+    useSpeech.js        Browser speech recognition, restart-on-pause
+    router.js           ~20 lines; real URLs, because scene links get texted to people
+  components/           StepList, RoleBoard, SceneLog, Metronome, IncomingAlert, SafetyBar
+  pages/                Home, Incident, Demo
 ```
 
-State is in-process by design: nothing to provision, and an incident is meaningless once EMS
-arrives. Incidents self-expire after two hours.
+The server pushes a **complete snapshot** once a second and again on every change, so there is no
+client-side state merging to get wrong: whatever the scene looks like on the server is exactly
+what renders on every phone. `useIncident` is the only place that touches the stream.
+
+Incident state is in-process by design: nothing to provision, and an incident is meaningless once
+EMS arrives. Incidents self-expire after two hours.
 
 ### Honest about what is simulated
 
