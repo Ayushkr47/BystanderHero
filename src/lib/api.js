@@ -31,6 +31,7 @@ export function mmss(totalSeconds) {
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
 
+/** 24-hour, the way a dispatch log is written, and it never wraps in a narrow column. */
 export function clockTime(ts) {
-  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  return new Date(ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 }

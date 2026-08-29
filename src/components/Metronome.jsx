@@ -44,24 +44,14 @@ export default function Metronome({ intervalMs = 60000 / BPM, label = `${BPM} be
         <span className="beat-orb" style={{ animationDuration: `${intervalMs}ms` }} />
       </div>
       {sound && (
-        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.7rem' }}>
-          <button
-            type="button"
-            className={`btn btn-sm ${playing ? 'btn-role' : 'btn-ghost'}`}
-            style={{ flex: 1 }}
-            onClick={() => setPlaying(true)}
-          >
-            Sound on
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${playing ? 'btn-ghost' : 'btn-role'}`}
-            style={{ flex: 1 }}
-            onClick={() => setPlaying(false)}
-          >
-            Sound off
-          </button>
-        </div>
+        <button
+          type="button"
+          className={`btn btn-sm ${playing ? 'btn-role' : 'btn-ghost'}`}
+          style={{ width: '100%', marginTop: '0.7rem' }}
+          onClick={() => setPlaying((on) => !on)}
+        >
+          {playing ? 'Mute the beat' : 'Play the beat out loud'}
+        </button>
       )}
     </div>
   );

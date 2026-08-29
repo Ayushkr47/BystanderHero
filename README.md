@@ -107,6 +107,41 @@ This is the part that mattered most, and it is enforced in code rather than prom
 
 ---
 
+## Design
+
+The visual language is **emergency signage**, not medical-tech gloss.
+
+In ISO 7010 — and in every airport, factory and station on earth — **green** means "first aid and
+safety equipment is here", amber means caution, and **red is reserved for fire and alarm**. So this
+interface uses green for covered/done/safe, amber for a role nobody has taken, and red *only* where
+something is genuinely live: the hands-on role, the alarm screen, the emergency button. Red is
+never decoration, which is what lets it mean something when it appears.
+
+The accent is **hi-vis (#C9F231)** — the colour of the vest worn by the person who turns up to
+help. It marks attention and never encodes status, so it can never be confused with a safety
+colour. The safety bar carries real hazard-tape hatching along its bottom edge.
+
+Type: **Archivo** for display (a signage/wayfinding grotesque), **Public Sans** for body, and
+**JetBrains Mono** for every number that matters — clocks, scene codes, timestamps. All three
+degrade to solid system stacks if the font request fails, which matters for an app that claims to
+work offline.
+
+Motion is deliberate and unevenly distributed:
+
+- **The landing page** has a hero that performs the product rather than describing it — a shared
+  clock over four assignment cards that deal themselves in one at a time, in depth — plus
+  scroll-triggered reveals that tilt sections up out of the page.
+- **The incident console has almost none.** The only thing that moves is the 110 bpm compression
+  metronome, because that motion *is* an instruction. Nobody kneeling on a pavement needs a card
+  to animate between them and "push hard and fast".
+
+Reveals are a geometry check on scroll rather than an `IntersectionObserver`. An observer delivers
+nothing while a tab is hidden or prerendering, and since the pre-reveal state is `opacity: 0`, a
+callback that never arrives leaves the page blank. A product about reliability should not have a
+decorative effect as a single point of failure. `prefers-reduced-motion` is honoured throughout.
+
+---
+
 ## Architecture
 
 **React 18 + Vite** on the front, a **zero-dependency Node server** behind it.
