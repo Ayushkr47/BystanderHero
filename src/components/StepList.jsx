@@ -33,7 +33,7 @@ function StepApparatus({ step, snapshot, onSwitchProtocol, secondsOnRole }) {
         <div className="metronome" onClick={(e) => e.stopPropagation()}>
           <div className="beat-label">
             <span>Time on this role</span>
-            <span style={{ color: due ? 'var(--amber)' : 'inherit', fontWeight: 800 }}>
+            <span style={{ color: due ? 'var(--caution)' : 'inherit', fontWeight: 800 }}>
               {due ? 'SWAP NOW' : `${mmss(120 - secondsOnRole)} until swap`}
             </span>
           </div>

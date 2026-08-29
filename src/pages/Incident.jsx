@@ -19,6 +19,7 @@ export default function Incident({ params }) {
 
   const [alertDismissed, setAlertDismissed] = useState(params.get('alert') !== '1');
   const [protocols, setProtocols] = useState([]);
+  const [locale, setLocale] = useState({ emergency: '112', ambulance: '108' });
   const [reliefState, setReliefState] = useState(null);
   const [banner, setBanner] = useState(null);
 
@@ -27,7 +28,9 @@ export default function Incident({ params }) {
   const roleSinceRef = useRef(Date.now());
   const lastCrisisRef = useRef(null);
 
-  useEffect(() => { api.meta().then(({ protocols: p }) => setProtocols(p)).catch(() => {}); }, []);
+  useEffect(() => {
+    api.meta().then(({ protocols: p, locale: l }) => { setProtocols(p); if (l) setLocale(l); }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     roleSinceRef.current = Date.now();
@@ -100,7 +103,8 @@ export default function Incident({ params }) {
       )}
 
       <SafetyBar>
-        <strong>Call 911 if nobody has.</strong> Follow the dispatcher over this app if they conflict.
+        <strong>Call {locale.emergency} if nobody has.</strong> Ambulance direct on {locale.ambulance}.
+        Follow the operator over this app if they conflict.
       </SafetyBar>
 
       <main className="wrap" style={{ padding: '1.5rem 0 4rem' }}>
@@ -128,7 +132,7 @@ export default function Incident({ params }) {
         {activeBanner && (
           <div
             className="panel"
-            style={{ borderColor: 'var(--amber)', background: 'rgba(255,176,32,0.12)', marginBottom: '1rem' }}
+            style={{ borderColor: 'var(--caution)', background: 'var(--caution-soft)', marginBottom: '1rem' }}
           >
             <strong style={{ fontSize: '1.05rem' }}>{activeBanner}</strong>
           </div>
@@ -178,7 +182,14 @@ export default function Incident({ params }) {
                 </button>
               )}
               {role?.key === 'dispatch' && (
-                <a className="btn btn-role" style={{ flex: 1 }} href="tel:911">Call 911</a>
+                <>
+                  <a className="btn btn-role" style={{ flex: 1 }} href={`tel:${locale.emergency}`}>
+                    Call {locale.emergency}
+                  </a>
+                  <a className="btn btn-ghost" style={{ flex: 1 }} href={`tel:${locale.ambulance}`}>
+                    Ambulance · {locale.ambulance}
+                  </a>
+                </>
               )}
             </div>
           </div>

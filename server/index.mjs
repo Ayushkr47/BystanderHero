@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 import { classify, AI_MODE } from './classify.mjs';
 import { PROTOCOL_LIST } from './protocols.mjs';
+import { LOCALE } from './locale.mjs';
 import * as store from './incidents.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -107,7 +108,7 @@ async function handleApi(req, res, url) {
 
   // GET /api/meta
   if (seg[1] === 'meta' && method === 'GET') {
-    return json(res, 200, { aiMode: AI_MODE, protocols: PROTOCOL_LIST });
+    return json(res, 200, { aiMode: AI_MODE, protocols: PROTOCOL_LIST, locale: LOCALE });
   }
 
   // GET /api/nearby  - stands in for a real geofenced query

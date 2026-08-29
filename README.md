@@ -63,7 +63,7 @@ the next unfilled role in survival order:
 | # | Role (cardiac arrest) | Why it is ranked there |
 | --- | --- | --- |
 | 1 | Chest compressions | Circulation stops first, and stays stopped without hands |
-| 2 | Call 911, stay on the line | The dispatcher outranks the app and needs a dedicated human |
+| 2 | Call 112, stay on the line | The operator outranks the app and needs a dedicated human |
 | 3 | Find the AED | ~10% survival per minute, and someone must physically run |
 | 4 | Clear the way, flag the ambulance | Seconds lost at the door are lost for good |
 | 5 | Relief compressor (×2) | Compression quality collapses at about 2 minutes |
@@ -104,6 +104,23 @@ This is the part that mattered most, and it is enforced in code rather than prom
   in the browser; only the resulting transcript is ever sent.
 - **Guidance stays inside what untrained hands can safely do**: no blind finger sweeps, no
   restraining a seizure, no lifting a dressing to check a bleed.
+
+---
+
+## Locale — India
+
+Built for India. **112** is the all-India emergency number (ERSS); **108** reaches an ambulance
+directly in most states and is often faster for a medical call, so both are offered — 112 as the
+primary and 108 beside it in the role that holds the phone.
+
+The number lives in exactly one file, `server/locale.mjs`, and every protocol step, safety bar and
+dial button reads from it. Nothing hardcodes a number. Shipping to another country is a change to
+that one file.
+
+One protocol detail is specific to the country rather than cosmetic: **AEDs are still uncommon in
+India**, so the "Find the AED" role is capped at roughly two minutes of looking and then explicitly
+sends that person back to take over compressions. Sending someone on a five-minute hunt for a
+defibrillator that does not exist costs a life; the protocol says so on screen.
 
 ---
 
@@ -178,6 +195,11 @@ EMS arrives. Incidents self-expire after two hours.
   a geofenced query plus push notification, which is the first thing on the production list below.
 - **Two phones on one machine.** The demo stage runs two real clients side by side. Nothing is
   mocked, but they are frames rather than separate devices.
+- **Speech recognition is the browser's, and it is cloud-backed.** Chrome's SpeechRecognition
+  needs a secure origin and a live connection. The UI shows a real microphone level meter from
+  `getUserMedia`, so you can see the mic working even when transcription produces nothing, and
+  every failure mode (permission refused, no mic, no network, insecure origin, mic open but
+  silent) is named on screen with a retry. Typing sits beside it as an equal path, not a fallback.
 - **Nobody is alerted who has not opened the app.** A real deployment needs push, and ideally
   registration with an existing responder network.
 

@@ -797,3 +797,23 @@ button.board-row:hover { transform: translateY(-2px); box-shadow: var(--lift-2);
   .beat-orb { animation: none; transform: scale(1); opacity: 1; }
   .stage-inner { transform: none; }
 }
+
+/* Live microphone level. The one control that proves the mic is alive when
+   transcription is silent — so it is deliberately large and obvious. */
+.mic-meter {
+  display: block;
+  height: 10px;
+  border-radius: 6px;
+  background: var(--sunk);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+.mic-meter span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--aid), var(--hivis));
+  transition: width 0.06s linear;
+}
+.listening-orb { transition: transform 0.08s ease-out; }

@@ -10,10 +10,10 @@ import { mmss } from '../lib/api';
  */
 
 const CREW = [
-  { who: 'Maya', role: 'compressions', job: 'Chest compressions', sub: 'You are the pump. Do not stop.', pulse: true },
-  { who: 'Dev', role: 'dispatch', job: 'Call 911, stay on the line', sub: 'You are the link to the ambulance.' },
-  { who: 'Priya', role: 'aed', job: 'Find the AED', sub: 'Lobby, reception, near the lifts. Go now.' },
-  { who: 'Tom', role: 'access', job: 'Clear the way, flag them in', sub: 'Nobody filming. Hold the door open.' }
+  { who: 'Meera', role: 'compressions', job: 'Chest compressions', sub: 'You are the pump. Do not stop.', pulse: true },
+  { who: 'Arun', role: 'dispatch', job: 'Call 112, stay on the line', sub: 'You are the link to the ambulance.' },
+  { who: 'Priya', role: 'aed', job: 'Find the AED', sub: 'Station office, metro control room. Two minutes max.' },
+  { who: 'Kabir', role: 'access', job: 'Clear the way, flag them in', sub: 'Nobody filming. Hold the door open.' }
 ];
 
 export default function SceneStage() {
@@ -29,7 +29,7 @@ export default function SceneStage() {
       <div className="stage-inner">
         <div className="scene-head">
           <div>
-            <div className="eyebrow">Scene 9REN · Central Station</div>
+            <div className="eyebrow">Scene 9REN · Dadar Station</div>
             <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.72)', marginTop: '0.2rem' }}>
               Cardiac arrest · 4 on scene
             </div>

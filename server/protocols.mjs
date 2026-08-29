@@ -6,8 +6,11 @@
  * Roles are listed in dispatch priority order: the first responder on scene takes role 0.
  *
  * Content follows widely published lay-rescuer first aid guidance (AHA / Red Cross style).
- * It is deliberately conservative, and every protocol defers to the 911 dispatcher.
+ * It is deliberately conservative, and every protocol defers to the emergency operator.
+ * The emergency number itself comes from locale.mjs and is never hardcoded here.
  */
+
+import { LOCALE, EMERGENCY } from './locale.mjs';
 
 export const PROTOCOLS = {
   cardiac_arrest: {
@@ -30,22 +33,22 @@ export const PROTOCOLS = {
         ]
       },
       {
-        key: 'dispatch', title: 'Call 911 and stay on the line', subtitle: 'You are the link to the ambulance.',
+        key: 'dispatch', title: `Call ${EMERGENCY} and stay on the line`, subtitle: 'You are the link to the ambulance.',
         color: 'blue', slots: 1,
         steps: [
-          { key: 'd1', text: 'Call 911 now. Put it on speaker', detail: 'The dispatcher outranks this app. Do what they tell you.' },
+          { key: 'd1', text: `Call ${EMERGENCY} now. Put it on speaker`, detail: `The ${LOCALE.operator} outranks this app. Do what they tell you. For a medical emergency ${LOCALE.ambulance} reaches an ambulance directly and is often faster.` },
           { key: 'd2', text: 'Read the dispatch line below to them, word for word', mode: 'dispatch' },
           { key: 'd3', text: 'Give the exact location: street, building, floor, nearest door' },
-          { key: 'd4', text: 'Stay on the line. Relay what the dispatcher says to the compressor' },
+          { key: 'd4', text: 'Stay on the line. Relay what the operator says to the compressor' },
           { key: 'd5', text: 'Tell them the moment the AED is attached' }
         ]
       },
       {
-        key: 'aed', title: 'Find the AED', subtitle: 'Every minute without one costs about 10% survival.',
+        key: 'aed', title: 'Find the AED', subtitle: 'Two minutes of looking, maximum. Then come back and take over.',
         color: 'amber', slots: 1,
         steps: [
-          { key: 'a1', text: 'GO NOW. Check: lobby, reception, gym, near the lifts, transit platforms' },
-          { key: 'a2', text: 'Shout to staff: "Where is the defibrillator?" Do not search silently' },
+          { key: 'a1', text: 'GO NOW. Best odds: metro stations, airports, malls, large offices, hotels, hospitals', detail: 'AEDs are still uncommon in India. If there is no AED within about two minutes, come back and take over compressions instead.' },
+          { key: 'a2', text: 'Shout to staff or security: "Is there an AED or defibrillator here?" Do not search silently' },
           { key: 'a3', text: 'Bring it back and switch it on. It speaks the instructions aloud' },
           { key: 'a4', text: 'Pads on bare skin: upper right chest, lower left ribs' },
           { key: 'a5', text: 'Shout CLEAR, check nobody is touching, then press shock if it tells you to' },
@@ -96,13 +99,13 @@ export const PROTOCOLS = {
         ]
       },
       {
-        key: 'dispatch', title: 'Call 911 and stay on the line', subtitle: 'Call even if the object comes out.',
+        key: 'dispatch', title: `Call ${EMERGENCY} and stay on the line`, subtitle: 'Call even if the object comes out.',
         color: 'blue', slots: 1,
         steps: [
-          { key: 'd1', text: 'Call 911 now. Speaker on' },
+          { key: 'd1', text: `Call ${EMERGENCY} now. Speaker on` },
           { key: 'd2', text: 'Read the dispatch line below to them, word for word', mode: 'dispatch' },
           { key: 'd3', text: 'Give the exact location: street, building, floor' },
-          { key: 'd4', text: 'Stay on the line and relay the dispatcher to the rescuer' }
+          { key: 'd4', text: 'Stay on the line and relay the operator to the rescuer' }
         ]
       },
       {
@@ -147,10 +150,10 @@ export const PROTOCOLS = {
         ]
       },
       {
-        key: 'dispatch', title: 'Call 911 and stay on the line', subtitle: 'They may talk you through a tourniquet.',
+        key: 'dispatch', title: `Call ${EMERGENCY} and stay on the line`, subtitle: 'They may talk you through a tourniquet.',
         color: 'blue', slots: 1,
         steps: [
-          { key: 'd1', text: 'Call 911 now. Speaker on' },
+          { key: 'd1', text: `Call ${EMERGENCY} now. Speaker on` },
           { key: 'd2', text: 'Read the dispatch line below to them, word for word', mode: 'dispatch' },
           { key: 'd3', text: 'Give the exact location, and say whether the scene is safe' },
           { key: 'd4', text: 'Say the time a tourniquet was applied, if there is one' }
@@ -209,10 +212,10 @@ export const PROTOCOLS = {
         ]
       },
       {
-        key: 'dispatch', title: 'Call 911 if any of these', subtitle: 'Over 5 min, injured, pregnant, first seizure, in water, not waking.',
+        key: 'dispatch', title: `Call ${EMERGENCY} if any of these`, subtitle: 'Over 5 min, injured, pregnant, first seizure, in water, not waking.',
         color: 'blue', slots: 1,
         steps: [
-          { key: 'd1', text: 'Check the triggers above. If any apply, call 911 now' },
+          { key: 'd1', text: `Check the triggers above. If any apply, call ${EMERGENCY} now` },
           { key: 'd2', text: 'Read the dispatch line below, and add how long it has lasted', mode: 'dispatch' },
           { key: 'd3', text: 'Give the exact location' }
         ]
@@ -249,10 +252,10 @@ export const PROTOCOLS = {
         ]
       },
       {
-        key: 'dispatch', title: 'Call 911 and stay on the line', subtitle: 'Naloxone wears off. They still need the ambulance.',
+        key: 'dispatch', title: `Call ${EMERGENCY} and stay on the line`, subtitle: 'Naloxone wears off. They still need the ambulance.',
         color: 'blue', slots: 1,
         steps: [
-          { key: 'd1', text: 'Call 911 now. Speaker on' },
+          { key: 'd1', text: `Call ${EMERGENCY} now. Speaker on` },
           { key: 'd2', text: 'Read the dispatch line below to them, word for word', mode: 'dispatch' },
           { key: 'd3', text: 'Give the exact location' },
           { key: 'd4', text: 'Say how many doses were given and at what time' }
