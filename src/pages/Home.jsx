@@ -21,7 +21,7 @@ const SEQUENCE = [
   },
   {
     title: 'It hands out different jobs',
-    body: 'Nobody has to volunteer, because nobody is asked. Each phone that arrives is given the next unfilled role in survival order — compressions, the 911 call, the AED, clearing the way, relief.'
+    body: 'Nobody has to volunteer, because nobody is asked. Each phone that arrives is given the next unfilled role in survival order — compressions, the 112 call, the AED, clearing the way, relief.'
   },
   {
     title: 'Everyone sees the same scene',
@@ -34,7 +34,7 @@ const SEQUENCE = [
 ];
 
 const SAFETY = [
-  ['The dispatcher outranks the app.', 'Every protocol says so on screen, inside the role holding the phone call. If 911 says something different, 911 wins.'],
+  ['The operator outranks the app.', 'Every protocol says so on screen, inside the role holding the phone call. If the 112 operator says something different, they win.'],
   ['It never diagnoses.', 'The model chooses between five published lay-rescuer protocols and does nothing else. It cannot invent an instruction, because every instruction is written in advance.'],
   ['A human can always override.', 'Low confidence blocks dispatch until someone confirms, and any responder can switch protocol mid-incident, which rebriefs the whole scene.'],
   ['It assumes untrained hands.', 'No blind finger sweeps, no restraining a seizure, no lifting a dressing to check a bleed.']
@@ -44,6 +44,7 @@ export default function Home() {
   const [screen, setScreen] = useState(null); // null | 'listen' | 'confirm' | 'join'
   const [aiMode, setAiMode] = useState(null);
   const [protocols, setProtocols] = useState([]);
+  const [locale, setLocale] = useState({ emergency: '112', ambulance: '108', emergencyNote: '' });
 
   const [typed, setTyped] = useState('');
   const [suggestion, setSuggestion] = useState(null);
@@ -66,7 +67,9 @@ export default function Home() {
   useReveal([screen]);
 
   useEffect(() => {
-    api.meta().then(({ aiMode: mode, protocols: p }) => { setAiMode(mode); setProtocols(p); }).catch(() => {});
+    api.meta().then(({ aiMode: mode, protocols: p, locale: l }) => {
+      setAiMode(mode); setProtocols(p); if (l) setLocale(l);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -150,8 +153,9 @@ export default function Home() {
   return (
     <>
       <SafetyBar>
-        <strong>Real emergency? Call 911 (or your local number) first.</strong>{' '}
-        BystanderHero helps the people already there. It does not replace dispatchers or paramedics.
+        <strong>Real emergency? Call {locale.emergency} first.</strong>{' '}
+        Ambulance direct on {locale.ambulance}. BystanderHero helps the people already there —
+        it does not replace emergency services or paramedics.
       </SafetyBar>
 
       <main>
@@ -174,7 +178,7 @@ export default function Home() {
               <h1>The first four minutes belong to <em>whoever is already there.</em></h1>
 
               <p className="lede">
-                Someone’s dad is face down on a station platform. Six people are standing over him
+                Someone’s father is face down on a station platform. Six people are standing over him
                 with their phones out. Every one of them wants to help, and every one of them is
                 waiting for somebody else to go first.
               </p>
@@ -234,15 +238,21 @@ export default function Home() {
               </div>
 
               <div className="panel" style={{ background: 'var(--alarm-soft)', borderColor: 'rgba(217,43,31,0.3)', marginBottom: '1.25rem' }}>
-                <strong style={{ fontSize: '1.05rem', color: '#a41d14' }}>Call 911 now if you have not already.</strong>
+                <strong style={{ fontSize: '1.05rem', color: '#a41d14' }}>
+                  Call {locale.emergency} now if you have not already.
+                </strong>
                 <p className="dim" style={{ marginTop: '0.3rem', fontSize: '0.92rem' }}>
-                  Put them on speaker and keep talking to them while you use this.
+                  {locale.emergencyNote || `${locale.emergency} is the all-India emergency number.`}{' '}
+                  Put them on speaker and keep talking while you use this.
                 </p>
               </div>
 
               {speechSupported && (
                 <div className="stack" style={{ '--gap': '1rem', textAlign: 'center' }}>
-                  <div className="listening-orb">
+                  <div
+                    className="listening-orb"
+                    style={{ transform: `scale(${1 + speech.level * 0.35})` }}
+                  >
                     <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
                       <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
                       <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3" />
@@ -250,15 +260,38 @@ export default function Home() {
                   </div>
                   <div>
                     <div style={{ fontSize: '1.15rem', fontWeight: 700 }}>{speech.message}</div>
-                    <div className="faint" style={{ fontSize: '0.88rem', marginTop: '0.25rem' }}>
-                      Say out loud what you can see.
+                    {speech.listening && (
+                      <div className="faint" style={{ fontSize: '0.88rem', marginTop: '0.25rem' }}>
+                        Say out loud what you can see.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* The honest signal. If this bar moves, the microphone is working, whatever
+                      the transcription is doing. */}
+                  {speech.listening && (
+                    <div>
+                      <div className="mic-meter" aria-hidden="true">
+                        <span style={{ width: `${Math.round(speech.level * 100)}%` }} />
+                      </div>
+                      <div className="eyebrow" style={{ marginTop: '0.5rem' }}>
+                        {speech.level > 0.06 ? 'Mic is picking you up' : 'Speak up — mic is open'}
+                      </div>
                     </div>
-                  </div>
-                  <div className="panel transcript" style={{ textAlign: 'left', minHeight: 74 }}>
-                    {speech.heard
-                      ? <><b>{speech.transcript.settled}</b> {speech.transcript.interim}</>
-                      : <span className="faint">Waiting for speech…</span>}
-                  </div>
+                  )}
+                  {(speech.heard || speech.listening) && (
+                    <div className="panel transcript" style={{ textAlign: 'left', minHeight: 74 }}>
+                      {speech.heard
+                        ? <><b>{speech.transcript.settled}</b> {speech.transcript.interim}</>
+                        : <span className="faint">Waiting for speech…</span>}
+                    </div>
+                  )}
+
+                  {['denied', 'insecure', 'network', 'nomic', 'error', 'silent'].includes(speech.status) && (
+                    <button type="button" className="btn btn-sm btn-ghost" onClick={speech.start}>
+                      Try the microphone again
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -352,7 +385,7 @@ export default function Home() {
                 <div>
                   <label className="eyebrow" htmlFor="place">Where are you?</label>
                   <input id="place" className="field" style={{ marginTop: '0.5rem' }} maxLength={60}
-                    value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Platform 3, Central Station" />
+                    value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Platform 3, Dadar Station" />
                 </div>
               </div>
 
@@ -443,7 +476,7 @@ export default function Home() {
               <p style={{ color: 'rgba(255,255,255,0.78)', lineHeight: 1.65 }}>
                 That is a coordination failure, and coordination failures have a fix that motivation
                 doesn’t: <span className="mark">assignment</span>. So this app never asks for
-                volunteers. It tells Maya to start compressions, Dev to call 911, Priya to run for
+                volunteers. It tells Maya to start compressions, Dev to call 112, Priya to run for
                 the AED — by name, at the same moment, on their own phones.
               </p>
             </div>

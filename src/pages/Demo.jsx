@@ -11,31 +11,31 @@ import SafetyBar from '../components/SafetyBar';
 
 const SCENARIOS = [
   {
-    label: 'Cardiac arrest — station platform',
+    label: 'Cardiac arrest — Mumbai local platform',
     transcript: 'She just collapsed on the platform, she is not breathing, I cannot find a pulse, someone help',
-    place: 'Platform 3, Central Station'
+    place: 'Platform 3, Dadar Station, Mumbai'
   },
   {
-    label: 'Choking — restaurant',
+    label: 'Choking — restaurant, Bengaluru',
     transcript: 'He is choking, he cannot speak, he is grabbing at his throat and going red',
-    place: 'Rossi’s, 40 High Street'
+    place: 'Sagar Ratna, 12 MG Road, Bengaluru'
   },
   {
-    label: 'Severe bleeding — building site',
+    label: 'Severe bleeding — construction site',
     transcript: 'There is blood everywhere, the cut on his leg is deep and it will not stop bleeding',
-    place: 'Site entrance, Wharf Road'
+    place: 'Site gate, Outer Ring Road, Hyderabad'
   }
 ];
 
 const CUES = [
   'Open on the empty stage. "An ambulance takes 4 to 8 minutes. This is what happens in between."',
-  'Press 1. Maya speaks the emergency, the AI names it, she confirms. Point out the confidence figure.',
+  'Press 1. Meera speaks the emergency, the AI names it, she confirms. Point out the confidence figure.',
   'Phone A lands on its role: hands-on, one instruction dominant, 110 bpm metronome running.',
   'Press 2. Phone B flashes red without being asked. Read out its assignment: a DIFFERENT job.',
   'Tick a step on Phone B. Show it appear in Phone A’s scene log a second later.',
   'Press 3. A third responder arrives and is handed the third-priority role automatically.',
   'On Phone A, press "I am tiring". The role swaps across phones live.',
-  'Close on the safety panel: dispatcher outranks the app, human can always override.'
+  'Close on the safety panel: the 112 operator outranks the app, and a human can always override.'
 ];
 
 const WATCH_FOR = [
@@ -57,12 +57,12 @@ export default function Demo() {
   const phoneB = useRef(null);
 
   const openScene = async () => {
-    setStatus('Classifying what Maya said…');
+    setStatus('Classifying what Meera said…');
     try {
       const { incident, responderId } = await api.open({
         transcript: SCENARIOS[scenario].transcript,
         place: SCENARIOS[scenario].place,
-        name: 'Maya'
+        name: 'Meera'
       });
 
       setIncidentId(incident.id);
@@ -81,7 +81,7 @@ export default function Demo() {
 
   const alertNearby = async () => {
     setStatus('Pulling in a nearby responder…');
-    const { responderId, incident } = await api.join(incidentId, 'Dev');
+    const { responderId, incident } = await api.join(incidentId, 'Arun');
     // alert=1 opens Phone B on the full-bleed incoming screen, the way a pocket alert would.
     phoneB.current.src = `/incident?id=${incidentId}&r=${responderId}&alert=1`;
 
@@ -89,7 +89,7 @@ export default function Demo() {
     setRoles((r) => ({ ...r, b: dev ? dev.roleTitle : 'assigned' }));
     setStage(2);
     setCue(3);
-    setStatus(`Dev was assigned "${dev?.roleTitle}" — deliberately not the job Maya is doing.`);
+    setStatus(`Arun was assigned "${dev?.roleTitle}" — deliberately not the job Meera is doing.`);
   };
 
   const thirdResponder = async () => {
@@ -115,7 +115,7 @@ export default function Demo() {
     <>
       <SafetyBar>
         <strong>Demonstration only.</strong> Simulated incident, simulated responders. In a real
-        emergency, call 911.
+        emergency, call 112.
       </SafetyBar>
 
       <main className="wrap" style={{ padding: '1.75rem 0 3rem' }}>
@@ -152,10 +152,10 @@ export default function Demo() {
                   onClick={openScene}
                   disabled={stage >= 1}
                 >
-                  1 · Maya opens the scene
+                  1 · Meera opens the scene
                 </button>
                 <button type="button" className="btn" onClick={alertNearby} disabled={stage !== 1}>
-                  2 · Dev gets pulled in nearby
+                  2 · Arun gets pulled in nearby
                 </button>
                 <button type="button" className="btn" onClick={thirdResponder} disabled={stage !== 2}>
                   3 · Third responder joins
@@ -184,7 +184,7 @@ export default function Demo() {
           <section>
             <div className="phone">
               <div className="phone-bar">
-                <span style={{ color: 'var(--red)' }}>● Phone A — Maya</span>
+                <span style={{ color: 'var(--r-hands)' }}>● Phone A — Meera</span>
                 <span className="faint">{roles.a}</span>
               </div>
               <iframe ref={phoneA} src="/" title="Phone A" />
@@ -194,7 +194,7 @@ export default function Demo() {
           <section>
             <div className="phone">
               <div className="phone-bar">
-                <span style={{ color: 'var(--teal)' }}>● Phone B — Dev</span>
+                <span style={{ color: 'var(--r-relief)' }}>● Phone B — Arun</span>
                 <span className="faint">{roles.b}</span>
               </div>
               <iframe ref={phoneB} src="/" title="Phone B" />
