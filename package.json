@@ -1,0 +1,12 @@
+{
+  "name": "bystanderhero",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Spatial AI for crowdsourced first response - coordinates multiple bystanders through the 4-8 minutes before EMS arrives.",
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

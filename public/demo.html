@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Two-phone demo — BystanderHero</title>
+<link rel="stylesheet" href="/css/app.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚨</text></svg>" />
+<style>
+  .stage { display: grid; grid-template-columns: 320px minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+  @media (max-width: 1100px) { .stage { grid-template-columns: minmax(0, 1fr); } }
+
+  .phone {
+    border: 10px solid #1b1f27;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: var(--shadow);
+    height: 720px;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.5rem 0.9rem;
+    background: #1b1f27;
+    font-size: 0.78rem; font-weight: 700;
+  }
+  .phone iframe { flex: 1; width: 100%; border: 0; background: var(--bg); }
+
+  .cue { display: grid; grid-template-columns: 26px 1fr; gap: 0.7rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
+  .cue:last-child { border-bottom: none; }
+  .cue-n { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--bg-panel); border: 1px solid var(--line-strong); font-size: 0.75rem; font-weight: 800; font-family: var(--mono); }
+  .cue-live .cue-n { background: var(--red); border-color: var(--red); color: #fff; }
+  .cue p { font-size: 0.86rem; line-height: 1.45; }
+</style>
+</head>
+<body>
+
+<div class="safety-bar">
+  <span><strong>Demonstration only.</strong> Simulated incident, simulated responders. In a real emergency, call 911.</span>
+</div>
+
+<main class="wrap" style="padding: 1.75rem 0 3rem;">
+  <header class="between" style="margin-bottom: 1.5rem;">
+    <div>
+      <div class="eyebrow">BystanderHero</div>
+      <h2 style="margin-top: 0.4rem;">Two phones, one scene</h2>
+      <p class="dim" style="margin-top: 0.35rem; font-size: 0.95rem;">
+        Both frames are real clients on the real server, synchronised over the same live session.
+      </p>
+    </div>
+    <a class="btn btn-ghost btn-sm" href="/">← Back to the app</a>
+  </header>
+
+  <div class="stage">
+
+    <!-- ====================================================== director -->
+    <aside class="stack" style="--gap: 1rem;">
+      <section class="card" style="padding: 1.1rem;">
+        <div class="eyebrow">Scenario</div>
+        <select id="scenario" class="field" style="margin-top: 0.6rem;">
+          <option value="0">Cardiac arrest — station platform</option>
+          <option value="1">Choking — restaurant</option>
+          <option value="2">Severe bleeding — building site</option>
+        </select>
+
+        <div class="stack" style="--gap: 0.55rem; margin-top: 1rem;">
+          <button class="btn btn-emergency" id="d1" style="min-height: 64px; font-size: 1.05rem;">1 · Maya opens the scene</button>
+          <button class="btn" id="d2" disabled>2 · Dev gets pulled in nearby</button>
+          <button class="btn" id="d3" disabled>3 · Third responder joins</button>
+          <button class="btn btn-ghost btn-sm" id="reset">Reset the stage</button>
+        </div>
+
+        <p class="faint" style="font-size: 0.8rem; margin-top: 0.9rem; line-height: 1.5;" id="d-status">
+          Nothing running. Press 1 to open a scene.
+        </p>
+      </section>
+
+      <section class="card" style="padding: 1.1rem;">
+        <div class="eyebrow">90-second script</div>
+        <div style="margin-top: 0.5rem;" id="cues"></div>
+      </section>
+    </aside>
+
+    <!-- ========================================================= phones -->
+    <section>
+      <div class="phone">
+        <div class="phone-bar">
+          <span style="color: var(--red);">● Phone A — Maya</span>
+          <span class="faint" id="a-role">first on scene</span>
+        </div>
+        <iframe id="phone-a" src="/" title="Phone A"></iframe>
+      </div>
+    </section>
+
+    <section>
+      <div class="phone">
+        <div class="phone-bar">
+          <span style="color: var(--teal);">● Phone B — Dev</span>
+          <span class="faint" id="b-role">40 metres away</span>
+        </div>
+        <iframe id="phone-b" src="/" title="Phone B"></iframe>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top: 1.5rem;">
+    <div class="eyebrow">What to watch for</div>
+    <div class="grid-2" style="margin-top: 1rem;">
+      <p class="dim" style="font-size: 0.95rem;">
+        <strong style="color: var(--ink)">Different jobs, not the same one.</strong> Phone A gets the hands-on
+        role. Phone B is never told to do the same thing — it gets the next most valuable unfilled job.
+      </p>
+      <p class="dim" style="font-size: 0.95rem;">
+        <strong style="color: var(--ink)">One shared truth.</strong> Tick a step on either phone and watch it
+        appear in the other's scene log within a second, over the same live session.
+      </p>
+      <p class="dim" style="font-size: 0.95rem;">
+        <strong style="color: var(--ink)">The human stays in charge.</strong> Switch protocol on either phone
+        and both are rebriefed and reassigned. The AI's guess is never final.
+      </p>
+      <p class="dim" style="font-size: 0.95rem;">
+        <strong style="color: var(--ink)">Rotation is prompted.</strong> Press "I am tiring" on Phone A and the
+        role physically swaps to Phone B, because compression quality collapses before people admit it.
+      </p>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="/js/demo.mjs"></script>
+</body>
+</html>

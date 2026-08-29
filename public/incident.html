@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Scene — BystanderHero</title>
+<link rel="stylesheet" href="/css/app.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚨</text></svg>" />
+</head>
+<body>
+
+<!-- Shown to someone who just got pulled in from nearby. Impossible to miss in a pocket. -->
+<div class="incoming hidden" id="incoming">
+  <div class="stack" style="--gap: 1.1rem; max-width: 34rem; width: 100%;">
+    <div class="eyebrow" style="color: rgba(255,255,255,0.85); letter-spacing: 0.2em;">
+      Emergency within 60 metres · <span id="incoming-crisis">—</span>
+    </div>
+
+    <div style="opacity: 0.9; font-size: 1.05rem;" id="incoming-place">—</div>
+
+    <div class="eyebrow" style="color: rgba(255,255,255,0.75); margin-top: 0.5rem;">Your job</div>
+    <h2 id="incoming-role" style="margin-top: -0.4rem;">—</h2>
+    <p style="font-size: 1.2rem; opacity: 0.92; font-weight: 600;" id="incoming-role-sub">—</p>
+
+    <button class="btn" id="incoming-go"
+      style="background: #fff; color: #b3140b; min-height: 84px; width: 100%; font-size: 1.45rem; font-weight: 820; border: none; margin-top: 0.5rem;">
+      I'm on it
+    </button>
+    <p style="font-size: 0.85rem; opacity: 0.8;">Not nearby or cannot help? Close this and the role passes to the next person.</p>
+  </div>
+</div>
+
+<div class="safety-bar">
+  <span><strong>Call 911 if nobody has.</strong> Follow the dispatcher over this app if they conflict.</span>
+</div>
+
+<main class="wrap" style="padding: 1.5rem 0 4rem;">
+
+  <!-- =========================================================== header -->
+  <header class="between" style="margin-bottom: 1.25rem;">
+    <div>
+      <div class="row">
+        <span class="chip chip-live"><span class="dot"></span> <span id="hdr-status">Live scene</span></span>
+        <span class="chip" id="hdr-responders">— on scene</span>
+      </div>
+      <h2 style="margin-top: 0.6rem;" id="hdr-crisis">Loading…</h2>
+      <p class="faint" style="font-size: 0.88rem; margin-top: 0.25rem;" id="hdr-place">—</p>
+    </div>
+    <div style="text-align: right;">
+      <div class="eyebrow">Elapsed</div>
+      <div class="clock" id="hdr-clock">00:00</div>
+      <div class="eyebrow" style="margin-top: 0.6rem;">Scene code</div>
+      <div class="code" id="hdr-code">····</div>
+    </div>
+  </header>
+
+  <!-- Fires when someone else switches protocol or calls for relief. -->
+  <div id="banner" class="panel hidden" style="border-color: var(--amber); background: rgba(255,176,32,0.12); margin-bottom: 1rem;">
+    <strong id="banner-text" style="font-size: 1.05rem;"></strong>
+  </div>
+
+  <div style="display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 1.25rem; align-items: start;" id="layout">
+
+    <!-- ========================================================= my role -->
+    <div class="stack" style="--gap: 1rem;">
+      <section class="role-hero" id="role-hero" data-role="standby">
+        <div class="between" style="align-items: flex-start;">
+          <div>
+            <span class="role-badge" id="role-badge">Your job</span>
+            <h1 class="role-title" style="margin-top: 0.7rem;" id="role-title">—</h1>
+            <p class="dim" style="margin-top: 0.4rem; font-size: 1.02rem;" id="role-sub">—</p>
+          </div>
+          <span class="chip" id="role-you">You</span>
+        </div>
+      </section>
+
+      <section id="steps"></section>
+
+      <div class="row" id="role-actions"></div>
+    </div>
+
+    <!-- ============================================================ side -->
+    <aside class="stack" style="--gap: 1rem;">
+      <section class="card" style="padding: 1.1rem;">
+        <div class="between" style="margin-bottom: 0.85rem;">
+          <h3>Who is doing what</h3>
+          <span class="faint" style="font-size: 0.78rem;">live</span>
+        </div>
+        <div class="board" id="board"></div>
+      </section>
+
+      <section class="card" style="padding: 1.1rem;">
+        <h3 style="margin-bottom: 0.6rem;">Scene log</h3>
+        <div class="log" id="log"></div>
+      </section>
+
+      <section class="card" style="padding: 1.1rem;">
+        <h3 style="margin-bottom: 0.6rem;">Heard at the scene</h3>
+        <div class="transcript" id="transcript"></div>
+      </section>
+
+      <section class="card" style="padding: 1.1rem;">
+        <h3 style="margin-bottom: 0.35rem;">Wrong protocol?</h3>
+        <p class="faint" style="font-size: 0.85rem; margin-bottom: 0.75rem;">
+          Switching rebriefs every phone on scene and reassigns all roles.
+        </p>
+        <div class="row" id="switch-picker"></div>
+      </section>
+
+      <section class="card" style="padding: 1.1rem;">
+        <h3 style="margin-bottom: 0.75rem;">When EMS takes over</h3>
+        <button class="btn btn-ghost btn-sm" id="btn-close" style="width: 100%;">Close the scene &amp; hand over</button>
+      </section>
+
+      <p class="faint" style="font-size: 0.8rem; line-height: 1.5;">
+        Prototype for RescueHacks. Not a medical device and not a substitute for emergency services
+        or trained clinicians. Guidance follows published lay-rescuer first aid; if a dispatcher or
+        paramedic tells you otherwise, do what they say.
+      </p>
+    </aside>
+  </div>
+</main>
+
+<script type="module" src="/js/incident.mjs"></script>
+</body>
+</html>

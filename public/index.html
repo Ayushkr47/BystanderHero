@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>BystanderHero — coordinated first response</title>
+<meta name="description" content="Turns the crowd at an emergency into a coordinated response team for the 4 to 8 minutes before the ambulance arrives." />
+<link rel="stylesheet" href="/css/app.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚨</text></svg>" />
+</head>
+<body>
+
+<div class="safety-bar">
+  <span><strong>If this is a real emergency, call 911 (or your local number) first.</strong> BystanderHero supports bystanders. It does not replace dispatchers or paramedics.</span>
+</div>
+
+<main class="wrap" style="padding: 3.5rem 0 4rem;">
+
+  <!-- ============================================================ hero -->
+  <section class="stack" style="--gap: 1.5rem; max-width: 780px;">
+    <div class="row">
+      <span class="chip chip-live"><span class="dot"></span> Prototype</span>
+      <span class="chip chip-ai" id="ai-mode-chip">AI triage</span>
+      <span class="chip">RescueHacks</span>
+    </div>
+
+    <h1>The first four minutes<br />belong to whoever<br />is already there.</h1>
+
+    <p style="font-size: 1.22rem; color: var(--ink-dim); max-width: 60ch;">
+      An ambulance takes 4 to 8 minutes. Survival from cardiac arrest falls about
+      <strong style="color: var(--ink)">10% for every minute</strong> nobody acts. The people who could
+      act are already standing there — they just don't know what to do, or assume someone else will.
+    </p>
+
+    <p style="font-size: 1.22rem; color: var(--ink-dim); max-width: 60ch;">
+      BystanderHero listens to the scene, works out what kind of emergency it is, and gives
+      <strong style="color: var(--ink)">every person present a different job</strong> — synchronised live,
+      on every phone at once.
+    </p>
+
+    <div class="grid-2" style="margin-top: 0.5rem;">
+      <button class="btn btn-emergency" id="btn-start">
+        I'm with someone — start now
+      </button>
+      <button class="btn" id="btn-join" style="min-height: 96px; font-size: 1.15rem; font-weight: 750;">
+        Join an incident nearby
+      </button>
+    </div>
+  </section>
+
+  <!-- ========================================================= listener -->
+  <section id="listen-panel" class="card hidden" style="margin-top: 2rem; max-width: 780px;">
+    <div class="between" style="margin-bottom: 1.25rem;">
+      <div>
+        <div class="eyebrow">Step 1 of 2</div>
+        <h2 style="margin-top: 0.3rem;">What is happening?</h2>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-listen">Cancel</button>
+    </div>
+
+    <div class="panel" style="background: #2a0b09; border-color: rgba(255,59,48,0.4); margin-bottom: 1.25rem;">
+      <strong style="font-size: 1.05rem;">Call 911 now if you have not already.</strong>
+      <p class="dim" style="margin-top: 0.3rem; font-size: 0.92rem;">
+        Put them on speaker and keep talking to them while you use this.
+      </p>
+    </div>
+
+    <div id="listening-live" class="stack" style="--gap: 1rem; text-align: center;">
+      <div class="listening-orb">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3" />
+        </svg>
+      </div>
+      <div>
+        <div style="font-size: 1.15rem; font-weight: 700;" id="listen-status">Listening to the scene…</div>
+        <div class="faint" style="font-size: 0.88rem; margin-top: 0.25rem;">Say out loud what you can see.</div>
+      </div>
+      <div class="panel transcript" id="transcript-box" style="text-align: left; min-height: 74px;">
+        <span class="faint">Waiting for speech…</span>
+      </div>
+    </div>
+
+    <div style="margin-top: 1rem;">
+      <label class="eyebrow" for="manual-input">Or type it — faster than fighting a microphone</label>
+      <textarea id="manual-input" class="field" style="margin-top: 0.5rem;"
+        placeholder="He's choking, he can't speak, he's grabbing his throat"></textarea>
+    </div>
+
+    <div class="stack" style="--gap: 0.5rem; margin-top: 1rem;">
+      <div class="eyebrow">Demo phrases — for judges and testing</div>
+      <div class="row" id="demo-phrases"></div>
+    </div>
+
+    <button class="btn btn-emergency" id="btn-analyse" style="margin-top: 1.25rem;">
+      Identify the emergency
+    </button>
+  </section>
+
+  <!-- ========================================================== confirm -->
+  <section id="confirm-panel" class="card hidden" style="margin-top: 2rem; max-width: 780px;">
+    <div class="eyebrow">Step 2 of 2 — confirm before it goes to everyone</div>
+
+    <div class="between" style="margin: 1rem 0 0.4rem;">
+      <h2 id="confirm-label">—</h2>
+      <span class="chip chip-ai" id="confirm-confidence">—</span>
+    </div>
+    <p class="dim" id="confirm-heard" style="font-size: 0.95rem;"></p>
+
+    <div class="disclaimer" style="margin-top: 1.25rem;">
+      This is a <strong>suggestion from an AI</strong>, not a diagnosis. You are standing there and it
+      is not. If this is wrong, change it — the correct protocol matters more than the AI being right.
+    </div>
+
+    <div style="margin-top: 1.25rem;">
+      <div class="eyebrow">It is actually…</div>
+      <div class="row" id="protocol-picker" style="margin-top: 0.6rem;"></div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 1.25rem;">
+      <div>
+        <label class="eyebrow" for="your-name">Your first name</label>
+        <input id="your-name" class="field" style="margin-top: 0.5rem;" placeholder="Sam" maxlength="24" />
+      </div>
+      <div>
+        <label class="eyebrow" for="place">Where are you?</label>
+        <input id="place" class="field" style="margin-top: 0.5rem;" placeholder="Platform 3, Central Station" maxlength="60" />
+      </div>
+    </div>
+
+    <button class="btn btn-emergency" id="btn-dispatch" style="margin-top: 1.25rem;">
+      Open the scene &amp; assign roles
+    </button>
+    <p class="faint" style="font-size: 0.84rem; margin-top: 0.75rem; text-align: center;">
+      This alerts every BystanderHero user nearby and gives each of them a different job.
+    </p>
+  </section>
+
+  <!-- ============================================================= join -->
+  <section id="join-panel" class="card hidden" style="margin-top: 2rem; max-width: 780px;">
+    <div class="between" style="margin-bottom: 1.25rem;">
+      <div>
+        <div class="eyebrow">Responding</div>
+        <h2 style="margin-top: 0.3rem;">Join an incident</h2>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-cancel-join">Cancel</button>
+    </div>
+
+    <div class="eyebrow">Active near you</div>
+    <div id="nearby-list" class="stack" style="--gap: 0.6rem; margin-top: 0.6rem;">
+      <p class="faint">Nothing active. Open an incident in another tab and it appears here.</p>
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+      <label class="eyebrow" for="join-code">Or enter the 4-character scene code</label>
+      <div class="row" style="margin-top: 0.6rem; flex-wrap: nowrap;">
+        <input id="join-code" class="field mono" style="letter-spacing: 0.25em; text-transform: uppercase;"
+          placeholder="A4KF" maxlength="4" />
+        <button class="btn" id="btn-join-code" style="flex-shrink: 0;">Join</button>
+      </div>
+      <p class="faint" id="join-error" style="font-size: 0.86rem; margin-top: 0.5rem;"></p>
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+      <label class="eyebrow" for="join-name">Your first name</label>
+      <input id="join-name" class="field" style="margin-top: 0.5rem;" placeholder="Alex" maxlength="24" />
+    </div>
+  </section>
+
+  <!-- ==================================================== how it works -->
+  <section style="margin-top: 5rem;">
+    <div class="eyebrow">How it works</div>
+    <h2 style="margin: 0.6rem 0 1.75rem;">Four people, four jobs, one clock.</h2>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="role-badge" style="--role: var(--violet);">01 · Hear</div>
+        <h3 style="margin: 0.85rem 0 0.5rem;">It listens to the shouting</h3>
+        <p class="dim" style="font-size: 0.95rem;">
+          Speech from the scene goes to Claude, which picks one protocol out of five and reports how
+          confident it is. Under 60% confidence, or any time you disagree, a human confirms first.
+          No network? A cue engine on the server does the same job offline.
+        </p>
+      </div>
+      <div class="card">
+        <div class="role-badge" style="--role: var(--red);">02 · Split</div>
+        <h3 style="margin: 0.85rem 0 0.5rem;">It splits the work</h3>
+        <p class="dim" style="font-size: 0.95rem;">
+          The bystander effect is a coordination failure, not apathy. So nobody chooses. Each arriving
+          phone is handed the next unfilled role in survival order — compressions, the 911 call, the
+          AED, crowd control, relief.
+        </p>
+      </div>
+      <div class="card">
+        <div class="role-badge" style="--role: var(--blue);">03 · Sync</div>
+        <h3 style="margin: 0.85rem 0 0.5rem;">Everyone sees the same scene</h3>
+        <p class="dim" style="font-size: 0.95rem;">
+          One shared session over server-sent events. When the AED runner ticks "AED attached", it
+          appears on the compressor's phone instantly. One clock, one checklist, no duplicated effort,
+          no gaps.
+        </p>
+      </div>
+      <div class="card">
+        <div class="role-badge" style="--role: var(--teal);">04 · Sustain</div>
+        <h3 style="margin: 0.85rem 0 0.5rem;">It keeps the quality up</h3>
+        <p class="dim" style="font-size: 0.95rem;">
+          A 110 bpm visual metronome holds the compression rate. Relief rotation is prompted every two
+          minutes and swaps roles across phones in one tap, because tired compressions stop working
+          long before the person doing them notices.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================== safety -->
+  <section class="card" style="margin-top: 3rem; border-color: rgba(255,176,32,0.3);">
+    <div class="eyebrow" style="color: var(--amber);">Where this stops</div>
+    <h2 style="margin: 0.6rem 0 1rem;">Designed to defer.</h2>
+    <div class="stack" style="--gap: 0.85rem; max-width: 68ch;">
+      <p class="dim">
+        <strong style="color: var(--ink)">The dispatcher outranks the app.</strong> Every protocol says
+        so, on screen, in the role that holds the phone call. If 911 says something different, 911 wins.
+      </p>
+      <p class="dim">
+        <strong style="color: var(--ink)">It never diagnoses.</strong> The AI picks between five
+        published lay-rescuer protocols and nothing else. It cannot invent an instruction, because every
+        instruction is written in advance and reviewed — the model only routes.
+      </p>
+      <p class="dim">
+        <strong style="color: var(--ink)">A human can always override.</strong> Low confidence blocks
+        dispatch until someone confirms, and any responder can switch protocol mid-incident, which
+        rebriefs the whole scene.
+      </p>
+      <p class="dim">
+        <strong style="color: var(--ink)">It assumes untrained hands.</strong> Guidance stays inside
+        what a layperson can safely do: no blind finger sweeps, no restraining a seizure, no lifting a
+        dressing to check a bleed.
+      </p>
+    </div>
+  </section>
+
+  <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line);">
+    <div class="between">
+      <p class="faint" style="font-size: 0.85rem;">
+        BystanderHero · built for RescueHacks · prototype, not a medical device
+      </p>
+      <a href="/demo" class="btn btn-ghost btn-sm">Open the two-phone demo →</a>
+    </div>
+  </footer>
+</main>
+
+<script type="module" src="/js/home.mjs"></script>
+</body>
+</html>
